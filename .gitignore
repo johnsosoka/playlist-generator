@@ -2,10 +2,11 @@
 __pycache__/
 *.py[cod]
 *$py.class
-
+*.iml
+.idea
 # C extensions
 *.so
-
+src/config.yml
 # Distribution / packaging
 .Python
 build/
