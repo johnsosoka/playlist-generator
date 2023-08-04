@@ -8,16 +8,11 @@ from config.config_loader import ConfigLoader
 import spotipy
 from langchain_experimental.autonomous_agents import AutoGPT
 from langchain.chat_models import ChatOpenAI
-from langchain.tools import tool, WriteFileTool, ReadFileTool
 from langchain.agents import load_tools
 
-
-import os
 # Define your embedding model
 embeddings_model = OpenAIEmbeddings()
 # Initialize the vectorstore as empty
-
-
 embedding_size = 1536
 index = faiss.IndexFlatL2(embedding_size)
 vectorstore = FAISS(embeddings_model.embed_query, index, InMemoryDocstore({}), {})
@@ -26,11 +21,8 @@ vectorstore = FAISS(embeddings_model.embed_query, index, InMemoryDocstore({}), {
 scope = "user-library-read playlist-modify-public playlist-modify-private"
 
 # configure
-config_loader = ConfigLoader("/Users/john/code/misc/playlist-generator/src/config.yml")
+config_loader = ConfigLoader("config.yml")
 config_loader.set_environment_variables()
-for key, value in os.environ.items():
-    print(f"{key}={value}")
-
 config = config_loader.load_config()
 
 from src.tools.add_song_tool import AddSongTool
@@ -39,12 +31,13 @@ from tools.find_song_tool import FindSongTool
 
 spotify = spotipy.Spotify(auth_manager=SpotifyOAuth(scope=scope))
 
+
 tools = load_tools(["google-search"])
-tools.append(WriteFileTool())
-tools.append(ReadFileTool())
-tools.append(FindSongTool())
-tools.append(AddSongTool())
-tools.append(PlaylistContentsTool())
+tools += [
+    FindSongTool(),
+    AddSongTool(),
+    PlaylistContentsTool()
+]
 
 agent = AutoGPT.from_llm_and_tools(
     ai_name="Tom",
@@ -55,17 +48,6 @@ agent = AutoGPT.from_llm_and_tools(
 )
 # Set verbose to be true
 agent.chain.verbose = True
-
-# ORIGINAL DUPES..
-# task_template = """
-# Your task is to build a themed spotify playlist. The playlist must not contain any duplicate songs.
-#
-# 1. Identify songs that fit the theme: '{song_theme}' using existing knowledge and internet search.
-# 2. Identify that the song is not already in the playlist with id {playlist_id}
-# 3. If the song is not currently in the playlist, Find the song on spotify.
-# 4. If spotify returns a URI, add the song to playlist id {playlist_id}
-# 5. Your task is complete when the playlist has {num_items} songs in it.
-# """
 
 task_template = """
 Your task is to build a themed spotify playlist. The playlist must not contain any duplicate songs. To add
