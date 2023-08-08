@@ -37,7 +37,6 @@ class AddSongTool(BaseTool):
     ) -> str:
 
         try:
-            # "0ylrX64UMWUwS1gjrDY2UO" is the id of the playlist
             spotify.playlist_add_items(playlist_id, [uri])
             return f"Song added successfully to playlist."
         except Exception as e:

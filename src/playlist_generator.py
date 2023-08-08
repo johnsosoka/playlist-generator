@@ -1,11 +1,9 @@
 from langchain import PromptTemplate
-from spotipy import SpotifyOAuth
 from langchain.vectorstores import FAISS
 from langchain.docstore import InMemoryDocstore
 from langchain.embeddings import OpenAIEmbeddings
 import faiss
 from config.config_loader import ConfigLoader
-import spotipy
 from langchain_experimental.autonomous_agents import AutoGPT
 from langchain.chat_models import ChatOpenAI
 from langchain.agents import load_tools
@@ -17,9 +15,6 @@ embedding_size = 1536
 index = faiss.IndexFlatL2(embedding_size)
 vectorstore = FAISS(embeddings_model.embed_query, index, InMemoryDocstore({}), {})
 
-
-scope = "user-library-read playlist-modify-public playlist-modify-private"
-
 # configure
 config_loader = ConfigLoader("config.yml")
 config_loader.set_environment_variables()
@@ -28,9 +23,6 @@ config = config_loader.load_config()
 from src.tools.add_song_tool import AddSongTool
 from src.tools.playlist_content_tool import PlaylistContentsTool
 from tools.find_song_tool import FindSongTool
-
-spotify = spotipy.Spotify(auth_manager=SpotifyOAuth(scope=scope))
-
 
 tools = load_tools(["google-search"])
 tools += [
@@ -67,7 +59,6 @@ to ensure that it is not already in the playlist. If the song is already in the 
 prompt = PromptTemplate.from_template(task_template)
 
 
-# TODO Capture from input
 playlist_id = "0ylrX64UMWUwS1gjrDY2UO"
 topic = "songs about mountains"
 target_playlist_size = 5

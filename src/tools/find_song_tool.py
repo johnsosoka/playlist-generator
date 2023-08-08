@@ -37,7 +37,6 @@ class FindSongTool(BaseTool):
 
         if results["tracks"]["items"]:
             top_result_item = results["tracks"]["items"][0]
-            top_uri = top_result_item["uri"]
             return top_result_item["uri"]
         else:
             # Handle the case where the search didn't return any results
@@ -46,9 +45,8 @@ class FindSongTool(BaseTool):
 
     async def _arun(
             self,
-            file_path: str,
-            text: str,
-            append: bool = False,
+            artist: str,
+            title: str,
             run_manager: Optional[AsyncCallbackManagerForToolRun] = None,
     ) -> str:
         raise NotImplementedError
