@@ -20,8 +20,8 @@ config_loader = ConfigLoader("config.yml")
 config_loader.set_environment_variables()
 config = config_loader.load_config()
 
-from src.tools.add_song_tool import AddSongTool
-from src.tools.playlist_content_tool import PlaylistContentsTool
+from tools.add_song_tool import AddSongTool
+from tools.playlist_content_tool import PlaylistContentsTool
 from tools.find_song_tool import FindSongTool
 
 tools = load_tools(["google-search"])
